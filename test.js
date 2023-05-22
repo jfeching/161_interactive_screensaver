@@ -137,7 +137,7 @@ async function main() {
   // compiles and links the shaders, looks up attribute and uniform locations
   const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
 
-  const response = 'object_files/cube.obj';
+  const response = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/test/object_files/practice_1.obj');
   const text = await response.text();
   const data = parseOBJ(text);
 
