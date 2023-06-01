@@ -136,10 +136,12 @@ async function main() {
 
   // compiles and links the shaders, looks up attribute and uniform locations
   const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
-
   const response = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/test/object_files/practice_1.obj');
   const text = await response.text();
   const data = parseOBJ(text);
+  const response1 = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/yellow_ball.obj');
+  const text1 = await response1.text();
+  const data1 = parseOBJ(text1);
 
   // Because data is just named arrays like this
   //
@@ -156,6 +158,7 @@ async function main() {
   // create a buffer for each array by calling
   // gl.createBuffer, gl.bindBuffer, gl.bufferData
   const bufferInfo = webglUtils.createBufferInfoFromArrays(gl, data);
+  const bufferInfo2 = webglUtils.createBufferInfoFromArrays(gl, data1);
 
   const cameraTarget = [0, 0, 0];
   const cameraPosition = [0, 0, 4];
@@ -208,9 +211,27 @@ async function main() {
     // calls gl.drawArrays or gl.drawElements
     webglUtils.drawBufferInfo(gl, bufferInfo);
 
+    //added for second object
+    const projection2 = m4.perspective(degToRad(90), aspect, 0.5, 20);
+
+    const sharedUniforms2 = {
+      u_lightDirection: m4.normalize([-1, 3, 5]),
+      u_view: view,
+      u_projection: projection2,
+    };
+
+    webglUtils.setUniforms(meshProgramInfo, sharedUniforms2);
+    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo2);
+    webglUtils.setUniforms(meshProgramInfo, {
+      u_world: m4.yRotation(-time),
+      u_diffuse: [1, 0.7, 0.5, 1],
+    });
+
+    webglUtils.drawBufferInfo(gl, bufferInfo2);
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
+
 }
 
 main();
