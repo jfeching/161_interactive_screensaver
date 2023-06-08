@@ -6,21 +6,22 @@ const gl = canvas.getContext('webgl2');
 var program = gl.createProgram();
 
 const vertexShaderSource = `#version 300 es
+precision mediump float;
 
 uniform vec3 uLightDirection;
 
-layout(location=0) in vec4 aPosition;
-layout(location=1) in vec3 aNormal; 
+in vec4 aPosition;
+in vec3 aNormal; 
 
 out float vBrightness
 
 void main(){
     vBrightness = max(dot(uLightDirection, aNormal), 0.0);
-    gl_Position = aPositionn;
- }`;
+    gl_Position = aPosition;
+ }
+ `;
 
 const fragmentShaderSource = `#version 300 es
-
 precision mediump float;
 
 in float vBrightness;
@@ -32,23 +33,40 @@ vec4 color = vec4(1.0, 0.0, 0.0, 1.0);
 void main(){
     fragColor = (color * .4) + (color * vBrightness * .6);
     fragColor.a = 1.0;
-}`;
+}
+`;
 
 function createShader (gl, type, sourceCode) {
     // Compiles either a shader of type gl.VERTEX_SHADER or gl.FRAGMENT_SHADER
+    console.log(sourceCode);
     var shader = gl.createShader( type );
     gl.shaderSource( shader, sourceCode );
     gl.compileShader( shader );
   
     if ( !gl.getShaderParameter(shader, gl.COMPILE_STATUS) ) {
       var info = gl.getShaderInfoLog( shader );
-      console.log(info);
+      throw new Error('Could not compile WebGL program. \n\n' + info);
     }
     return shader;
   }
 
-const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+// const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vertexShader, vertexShaderSource);
+gl.compileShader(vertexShader);
+if ( !gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS) ) {
+    var info = gl.getShaderInfoLog( vertexShader );
+    throw new Error('Could not compile WebGL program. \n\n' + info);
+}
+// const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fragmentShader, fragmentShaderSource);
+gl.compileShader(fragmentShader);
+if ( !gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS) ) {
+    var info = gl.getShaderInfoLog( fragmentShader );
+    throw new Error('Could not compile WebGL program. \n\n' + info);
+}
+
 
 gl.attachShader(program, vertexShader);
 gl.attachShader(program,fragmentShader);
