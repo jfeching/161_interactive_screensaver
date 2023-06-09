@@ -171,6 +171,14 @@ async function main() {
   let speedslider = document.getElementById("speed");
   let speed_text = document.getElementById("speed_mult");
   let speed_mult = 1;
+
+  let ldx = 1.0, ldy = 1.0, ldz = 1.0;
+  //sliders for light direction
+  let xldslider = document.getElementById("x-lightdir");
+  let yldslider = document.getElementById("y-lightdir");
+  let zldslider = document.getElementById("z-lightdir");
+  let lidiroutput = document.getElementById("lidirVector");
+
   function render(time) {
     time *= 0.001 * speed_mult;  // convert to seconds
 
@@ -184,6 +192,19 @@ async function main() {
       speed_mult = this.value / 10;
 
       speed_text.innerHTML = String(speedslider.value / 10);
+    }
+
+    xldslider.oninput = function () {
+      ldx = this.value / 10;
+      lidiroutput.innerHTML = "x: " + String(xldslider.value / 10) + " y: " + String(yldslider.value / 10) + " z: " + String(zldslider.value / 10);
+    }
+    yldslider.oninput = function () {
+      ldy = this.value / 10;
+      lidiroutput.innerHTML = "x: " + String(xldslider.value / 10) + " y: " + String(yldslider.value / 10) + " z: " + String(zldslider.value / 10);
+    }
+    zldslider.oninput = function () {
+      ldz = this.value / 10;
+      lidiroutput.innerHTML = "x: " + String(xldslider.value / 10) + " y: " + String(yldslider.value / 10) + " z: " + String(zldslider.value / 10);
     }
 
     const fieldOfViewRadians = degToRad(60);
@@ -215,6 +236,7 @@ async function main() {
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.yRotation(time),
       u_diffuse: [1, 0.7, 0.5, 1],
+      u_lightDirection: [ldx, ldy, ldz]
     });
 
     // calls gl.drawArrays or gl.drawElements
@@ -234,6 +256,7 @@ async function main() {
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.yRotation(-time),
       u_diffuse: [1, 0.7, 0.5, 1],
+      u_lightDirection: [ldx, ldy, ldz]
     });
 
     webglUtils.drawBufferInfo(gl, bufferInfo2);
@@ -244,3 +267,5 @@ async function main() {
 }
 
 main();
+
+
