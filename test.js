@@ -168,14 +168,23 @@ async function main() {
   function degToRad(deg) {
     return deg * Math.PI / 180;
   }
-
+  let speedslider = document.getElementById("speed");
+  let speed_text = document.getElementById("speed_mult");
+  let speed_mult = 1;
   function render(time) {
-    time *= 0.001;  // convert to seconds
+    time *= 0.001 * speed_mult;  // convert to seconds
 
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
+
+
+    speedslider.oninput = function () {
+      speed_mult = this.value / 10;
+
+      speed_text.innerHTML = String(speedslider.value / 10);
+    }
 
     const fieldOfViewRadians = degToRad(60);
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
