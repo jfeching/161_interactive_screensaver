@@ -179,6 +179,39 @@ async function main() {
   let zldslider = document.getElementById("z-lightdir");
   let lidiroutput = document.getElementById("lidirVector");
 
+  //sliders to change the speed parameters
+  speedslider.oninput = function () {
+    speed_mult = this.value / 10;
+    speed_text.innerHTML = String(speedslider.value / 10);
+  }
+
+  //sliders to change the light direction parameters (x y z)
+  xldslider.oninput = function () {
+    ldx = this.value / 10;
+    lidiroutput.innerHTML = "x: " + String(xldslider.value / 10) + " y: " + String(yldslider.value / 10) + " z: " + String(zldslider.value / 10);
+  }
+  yldslider.oninput = function () {
+    ldy = this.value / 10;
+    lidiroutput.innerHTML = "x: " + String(xldslider.value / 10) + " y: " + String(yldslider.value / 10) + " z: " + String(zldslider.value / 10);
+  }
+  zldslider.oninput = function () {
+    ldz = this.value / 10;
+    lidiroutput.innerHTML = "x: " + String(xldslider.value / 10) + " y: " + String(yldslider.value / 10) + " z: " + String(zldslider.value / 10);
+  }
+
+  //listens to keyboard events
+  document.addEventListener('keydown', (event) => {
+    //Press T to move the camera position to "top view"
+    if (event.key == 'T' || event.key == "t") {
+      cameraPosition[1] = 10;
+      //Press spacebar to reset
+    } else if (event.key == ' ') {
+      cameraPosition[1] = 0;
+    }
+
+  }, false);
+
+
   function render(time) {
     time *= 0.001 * speed_mult;  // convert to seconds
 
@@ -187,25 +220,6 @@ async function main() {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
-
-    speedslider.oninput = function () {
-      speed_mult = this.value / 10;
-
-      speed_text.innerHTML = String(speedslider.value / 10);
-    }
-
-    xldslider.oninput = function () {
-      ldx = this.value / 10;
-      lidiroutput.innerHTML = "x: " + String(xldslider.value / 10) + " y: " + String(yldslider.value / 10) + " z: " + String(zldslider.value / 10);
-    }
-    yldslider.oninput = function () {
-      ldy = this.value / 10;
-      lidiroutput.innerHTML = "x: " + String(xldslider.value / 10) + " y: " + String(yldslider.value / 10) + " z: " + String(zldslider.value / 10);
-    }
-    zldslider.oninput = function () {
-      ldz = this.value / 10;
-      lidiroutput.innerHTML = "x: " + String(xldslider.value / 10) + " y: " + String(yldslider.value / 10) + " z: " + String(zldslider.value / 10);
-    }
 
     const fieldOfViewRadians = degToRad(60);
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
