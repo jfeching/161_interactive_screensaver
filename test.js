@@ -3,7 +3,7 @@
 // This is not a full .obj parser.
 // see http://paulbourke.net/dataformats/obj/
 
-function parseOBJ(planetText) {
+function parseOBJ(text) {
   // because indices are base 1 let's just fill in the 0th planetData
   const objPositions = [[0, 0, 0]];
   const objTexcoords = [[0, 0]];
@@ -66,7 +66,7 @@ function parseOBJ(planetText) {
   };
 
   const keywordRE = /(\w*)(?: )*(.*)/;
-  const lines = planetText.split('\n');
+  const lines = text.split('\n');
   for (let lineNo = 0; lineNo < lines.length; ++lineNo) {
     const line = lines[lineNo].trim();
     if (line === '' || line.startsWith('#')) {
@@ -127,6 +127,22 @@ async function main() {
   }
   `;
 
+  const smoothVs = `
+  attribute vec4 a_position;
+  attribute vec3 a_normal;
+
+  uniform mat4 u_matrix;
+  uniform mat4 u_transformation;
+  uniform mat4 u_world;
+
+  varying vec3 v_normal;
+
+  void main() {
+    gl_Position = u_transformation * u_matrix * a_position;
+    v_normal = mat3(u_world) * a_position.xyz;
+  }
+  `;
+
   const fs = `
   precision mediump float;
 
@@ -144,7 +160,10 @@ async function main() {
 
 
   // compiles and links the shaders, looks up attribute and uniform locations
-  const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
+  // Regular cube-like normals
+  // const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
+  // Smooth lighting normals
+  const meshProgramInfo = webglUtils.createProgramInfo(gl, [smoothVs, fs]);
   console.log("is error?");
 
   /**FOR THE OTHER DEVS
