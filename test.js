@@ -116,7 +116,7 @@ async function main() {
   varying vec3 v_normal;
 
   void main() {
-    gl_Position = u_matrix * u_world * a_position;
+    gl_Position = u_matrix * a_position;
     v_normal = mat3(u_world) * a_normal;
   }
   `;
@@ -184,18 +184,21 @@ async function main() {
     return deg * Math.PI / 180;
   }
 
-  function computeMatrix(viewProjectionMatrix,translation) {
-    var matrix = m4.translate(viewProjectionMatrix,
+  function computeMatrix(viewProjectionMatrix,translation,Rotate,Revolve) {
+    var matrix = viewProjectionMatrix;
+    matrix = m4.yRotate(matrix,Rotate);
+    matrix = m4.translate(matrix,
       translation[0],
       translation[1],
       translation[2]);
+    matrix = m4.yRotate(matrix,Revolve);
     return matrix;
-  }
+    }
 
   // Render function
   // requires the param 'time'
   function render(time) {
-    time *= 0.001;  // convert to seconds
+    time = time * 0.001;  // convert to seconds
 
     // Resizing canvas and enabling options
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
@@ -230,11 +233,13 @@ async function main() {
      * - set world rotation and diffuse (includes color)
      * - draw
      */
-    var planetTranslate = [-4,0,0]
+    var planetTranslate = [-4,0,0];
+    var planetRotate = time;
+    var planetRevolve = time;
 
     const planetUniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
-      u_matrix: computeMatrix(viewProjectionMatrix,planetTranslate),
+      u_matrix: computeMatrix(viewProjectionMatrix,planetTranslate,planetRotate,planetRevolve),
     };
 
     // calls gl.uniform
@@ -243,7 +248,7 @@ async function main() {
     webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, planetBufferInfo);
     // calls gl.uniform
     webglUtils.setUniforms(meshProgramInfo, {
-      u_world: m4.yRotation(time),
+      u_world: m4.multiply(m4.yRotation(planetRotate),m4.yRotation(planetRevolve)),
       u_diffuse: [1, 0.7, 0.5, 1],
     });
     // calls gl.drawArrays or gl.drawElements
@@ -253,15 +258,19 @@ async function main() {
     /**
      * STAR
     */
+    var starTranslate = [0,0,0];
+    var starRotate = -time;
+    var starRevolve = 0;
+
     const starUniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
-      u_matrix: viewProjectionMatrix,
+      u_matrix: computeMatrix(viewProjectionMatrix,starTranslate,starRotate,starRevolve),
     };
 
     webglUtils.setUniforms(meshProgramInfo, starUniforms);
     webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, starBufferInfo);
     webglUtils.setUniforms(meshProgramInfo, {
-      u_world: m4.yRotation(-time),
+      u_world: m4.multiply(m4.yRotation(starRotate),m4.yRotation(starRevolve)),
       u_diffuse: [1, 1, 0, 1],
     });
 
