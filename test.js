@@ -3,8 +3,8 @@
 // This is not a full .obj parser.
 // see http://paulbourke.net/dataformats/obj/
 
-function parseOBJ(text) {
-  // because indices are base 1 let's just fill in the 0th data
+function parseOBJ(planetText) {
+  // because indices are base 1 let's just fill in the 0th planetData
   const objPositions = [[0, 0, 0]];
   const objTexcoords = [[0, 0]];
   const objNormals = [[0, 0, 0]];
@@ -26,7 +26,7 @@ function parseOBJ(text) {
   function newGeometry() {
     // If there is an existing geometry and it's
     // not empty then start a new one.
-    if (geometry && geometry.data.position.length) {
+    if (geometry && geometry.planetData.position.length) {
       geometry = undefined;
     }
     setGeometry();
@@ -66,7 +66,7 @@ function parseOBJ(text) {
   };
 
   const keywordRE = /(\w*)(?: )*(.*)/;
-  const lines = text.split('\n');
+  const lines = planetText.split('\n');
   for (let lineNo = 0; lineNo < lines.length; ++lineNo) {
     const line = lines[lineNo].trim();
     if (line === '' || line.startsWith('#')) {
@@ -136,14 +136,23 @@ async function main() {
 
   // compiles and links the shaders, looks up attribute and uniform locations
   const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
-  const response = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/test/object_files/practice_1.obj');
-  const text = await response.text();
-  const data = parseOBJ(text);
-  const response1 = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/yellow_ball.obj');
-  const text1 = await response1.text();
-  const data1 = parseOBJ(text1);
 
-  // Because data is just named arrays like this
+  /**FOR THE OTHER DEVS
+   * I got rid of practice_1.obj - Carlos
+   */
+  // const planetResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/practice_1.obj');
+  // const planetText = await planetResponse.planetText();
+  // const planetData = parseOBJ(planetText);
+  // Star Object
+  const planetResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/brown_ball.obj');
+  const planetText = await planetResponse.text();
+  const planetData = parseOBJ(planetText);
+  // Brown Ball object
+  const starResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/yellow_ball.obj');
+  const starText = await starResponse.text();
+  const starData = parseOBJ(starText);
+
+  // Because planetData is just named arrays like this
   //
   // {
   //   position: [...],
@@ -157,77 +166,101 @@ async function main() {
 
   // create a buffer for each array by calling
   // gl.createBuffer, gl.bindBuffer, gl.bufferData
-  const bufferInfo = webglUtils.createBufferInfoFromArrays(gl, data);
-  const bufferInfo2 = webglUtils.createBufferInfoFromArrays(gl, data1);
+  const starBufferInfo = webglUtils.createBufferInfoFromArrays(gl, planetData);
+  const brownBallBufferInfo = webglUtils.createBufferInfoFromArrays(gl, starData);
 
+  // Camera parameters
   const cameraTarget = [0, 0, 0];
   const cameraPosition = [0, 0, 4];
   const zNear = 0.1;
   const zFar = 50;
+  const up = [0, 1, 0];
 
   function degToRad(deg) {
     return deg * Math.PI / 180;
   }
 
+  // Render function
+  // requires the param 'time'
   function render(time) {
     time *= 0.001;  // convert to seconds
 
+    // Resizing canvas and enabling options
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
+    // FOV and aspect ratio
     const fieldOfViewRadians = degToRad(60);
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 
-    const up = [0, 1, 0];
     // Compute the camera's matrix using look at.
     const camera = m4.lookAt(cameraPosition, cameraTarget, up);
 
     // Make a view matrix from the camera matrix.
     const view = m4.inverse(camera);
+    
+    gl.useProgram(meshProgramInfo.program);
 
-    const sharedUniforms = {
+    /**Planet projection
+     * Requires:
+     * - projection
+     * - uniforms
+     * Then:
+     * - set uniforms
+     * - set buffers amd attributes
+     * - set world rotation and diffuse (includes color)
+     * - draw
+     */
+    const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
+
+    const planetUniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
       u_view: view,
       u_projection: projection,
     };
 
-    gl.useProgram(meshProgramInfo.program);
-
     // calls gl.uniform
-    webglUtils.setUniforms(meshProgramInfo, sharedUniforms);
-
+    webglUtils.setUniforms(meshProgramInfo, planetUniforms);
     // calls gl.bindBuffer, gl.enableVertexAttribArray, gl.vertexAttribPointer
-    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo);
-
+    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, starBufferInfo);
     // calls gl.uniform
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.yRotation(time),
       u_diffuse: [1, 0.7, 0.5, 1],
     });
-
     // calls gl.drawArrays or gl.drawElements
-    webglUtils.drawBufferInfo(gl, bufferInfo);
+    webglUtils.drawBufferInfo(gl, starBufferInfo);
 
-    //added for second object
+    /**Star projection
+     * Requires:
+     * - projection
+     * - uniforms
+     * Then:
+     * - set uniforms
+     * - set buffers amd attributes
+     * - set world rotation and diffuse (includes color)
+     * - draw
+     */
     const projection2 = m4.perspective(degToRad(90), aspect, 0.5, 20);
 
-    const sharedUniforms2 = {
+    const starUniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
       u_view: view,
       u_projection: projection2,
     };
 
-    webglUtils.setUniforms(meshProgramInfo, sharedUniforms2);
-    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo2);
+    webglUtils.setUniforms(meshProgramInfo, starUniforms);
+    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, brownBallBufferInfo);
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.yRotation(-time),
-      u_diffuse: [1, 0.7, 0.5, 1],
+      u_diffuse: [1, 1, 0, 1],
     });
 
-    webglUtils.drawBufferInfo(gl, bufferInfo2);
+    webglUtils.drawBufferInfo(gl, brownBallBufferInfo);
+
+    // loops the animation
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
