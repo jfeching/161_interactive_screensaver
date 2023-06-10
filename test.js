@@ -102,18 +102,21 @@ async function main() {
     return;
   }
 
+  /**UPDATE:
+   * - u_projection and u_view combined into u_matrix 
+  */
+
   const vs = `
   attribute vec4 a_position;
   attribute vec3 a_normal;
 
-  uniform mat4 u_projection;
-  uniform mat4 u_view;
+  uniform mat4 u_matrix;
   uniform mat4 u_world;
 
   varying vec3 v_normal;
 
   void main() {
-    gl_Position = u_projection * u_view * u_world * a_position;
+    gl_Position = u_matrix * u_world * a_position;
     v_normal = mat3(u_world) * a_normal;
   }
   `;
@@ -136,6 +139,7 @@ async function main() {
 
   // compiles and links the shaders, looks up attribute and uniform locations
   const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
+  console.log("is error?");
 
   /**FOR THE OTHER DEVS
    * I got rid of practice_1.obj - Carlos
@@ -166,18 +170,26 @@ async function main() {
 
   // create a buffer for each array by calling
   // gl.createBuffer, gl.bindBuffer, gl.bufferData
-  const starBufferInfo = webglUtils.createBufferInfoFromArrays(gl, planetData);
-  const brownBallBufferInfo = webglUtils.createBufferInfoFromArrays(gl, starData);
+  const planetBufferInfo = webglUtils.createBufferInfoFromArrays(gl, planetData);
+  const starBufferInfo = webglUtils.createBufferInfoFromArrays(gl, starData);
 
   // Camera parameters
   const cameraTarget = [0, 0, 0];
-  const cameraPosition = [0, 0, 4];
+  const cameraPosition = [0, 0, 10];
   const zNear = 0.1;
   const zFar = 50;
   const up = [0, 1, 0];
 
   function degToRad(deg) {
     return deg * Math.PI / 180;
+  }
+
+  function computeMatrix(viewProjectionMatrix,translation) {
+    var matrix = m4.translate(viewProjectionMatrix,
+      translation[0],
+      translation[1],
+      translation[2]);
+    return matrix;
   }
 
   // Render function
@@ -202,10 +214,15 @@ async function main() {
     const view = m4.inverse(camera);
     
     gl.useProgram(meshProgramInfo.program);
+    
+    const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 
-    /**Planet projection
+    const viewProjectionMatrix = m4.multiply(projection,view);
+    
+    /**
+     * PLANET
      * Requires:
-     * - projection
+     * - modified viewprojection
      * - uniforms
      * Then:
      * - set uniforms
@@ -213,52 +230,42 @@ async function main() {
      * - set world rotation and diffuse (includes color)
      * - draw
      */
-    const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
+    var planetTranslate = [-4,0,0]
 
     const planetUniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
-      u_view: view,
-      u_projection: projection,
+      u_matrix: computeMatrix(viewProjectionMatrix,planetTranslate),
     };
 
     // calls gl.uniform
     webglUtils.setUniforms(meshProgramInfo, planetUniforms);
     // calls gl.bindBuffer, gl.enableVertexAttribArray, gl.vertexAttribPointer
-    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, starBufferInfo);
+    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, planetBufferInfo);
     // calls gl.uniform
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.yRotation(time),
       u_diffuse: [1, 0.7, 0.5, 1],
     });
     // calls gl.drawArrays or gl.drawElements
-    webglUtils.drawBufferInfo(gl, starBufferInfo);
+    webglUtils.drawBufferInfo(gl, planetBufferInfo);
 
-    /**Star projection
-     * Requires:
-     * - projection
-     * - uniforms
-     * Then:
-     * - set uniforms
-     * - set buffers amd attributes
-     * - set world rotation and diffuse (includes color)
-     * - draw
-     */
-    const projection2 = m4.perspective(degToRad(90), aspect, 0.5, 20);
-
+    
+    /**
+     * STAR
+    */
     const starUniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
-      u_view: view,
-      u_projection: projection2,
+      u_matrix: viewProjectionMatrix,
     };
 
     webglUtils.setUniforms(meshProgramInfo, starUniforms);
-    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, brownBallBufferInfo);
+    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, starBufferInfo);
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.yRotation(-time),
       u_diffuse: [1, 1, 0, 1],
     });
 
-    webglUtils.drawBufferInfo(gl, brownBallBufferInfo);
+    webglUtils.drawBufferInfo(gl, starBufferInfo);
 
     // loops the animation
     requestAnimationFrame(render);
