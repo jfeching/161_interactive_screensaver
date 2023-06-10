@@ -122,7 +122,7 @@ async function main() {
   varying vec3 v_normal;
 
   void main() {
-    gl_Position = u_transformation * u_matrix u_world * a_position;
+    gl_Position = u_transformation * u_matrix * a_position;
     v_normal = mat3(u_world) * a_normal;
   }
   `;
@@ -258,6 +258,9 @@ async function main() {
     }
   }, false);
 
+  /**Compute matrix
+   * - basically ensures that the object is revolving correctly
+   */
   function computeMatrix(viewProjectionMatrix,translation,Rotate,Revolve) {
     var matrix = viewProjectionMatrix;
     matrix = m4.yRotate(matrix,Rotate);
@@ -267,7 +270,8 @@ async function main() {
       translation[2]);
     matrix = m4.yRotate(matrix,Revolve);
     return matrix;
-    }
+  }
+
   function render(time) {
     time *= 0.001 * speed_mult;  // convert to seconds
 
@@ -286,33 +290,31 @@ async function main() {
     // Make a view matrix from the camera matrix.
     const view = m4.inverse(camera);
 
-    // const sharedUniforms = {
-    //   u_lightDirection: m4.normalize([-1, 3, 5]),
-    //   u_transformation: transformationMatrix,
-    // };
-
     gl.useProgram(meshProgramInfo.program);
     
+    // Compute viewProjectionMatrix
     const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-
     const viewProjectionMatrix = m4.multiply(projection,view);
     
     /**
      * PLANET
      * Requires:
      * - modified viewprojection
+     *  - set planet rotation and revolution
+     * - transformMatrix
      * - uniforms
      * Then:
      * - set uniforms
      * - set buffers amd attributes
      * - set world rotation and diffuse (includes color)
+     *  - world rotation and planet rotation must match
      * - draw
      */
     var planetTranslate = [-4,0,0];
     var planetRotate = time;
     var planetRevolve = time;
-
     
+    // sets the revolution
     const planetUniforms = { 
       u_lightDirection: m4.normalize([-1, 3, 5]),
       u_matrix: computeMatrix(viewProjectionMatrix,planetTranslate,planetRotate,planetRevolve),
@@ -323,6 +325,8 @@ async function main() {
     // calls gl.bindBuffer, gl.enableVertexAttribArray, gl.vertexAttribPointer
     webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, planetBufferInfo);
     // calls gl.uniform
+    // u_world must match rotate * revolve, thus we have multiply
+    // if not, maiiwan ang calculation ng light direction
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.multiply(m4.yRotation(planetRotate),m4.yRotation(planetRevolve)),      
       u_diffuse: colors[0],
@@ -335,6 +339,7 @@ async function main() {
     
     /**
      * STAR
+     * Procedure is same for PLANET except no translate and revolve
     */
     var starTranslate = [0,0,0];
     var starRotate = -time;
@@ -348,7 +353,7 @@ async function main() {
     webglUtils.setUniforms(meshProgramInfo, starUniforms);
     webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, starBufferInfo);
     webglUtils.setUniforms(meshProgramInfo, {
-      u_world: m4.multiply(m4.yRotation(planetRotate),m4.yRotation(planetRevolve)),      
+      u_world: m4.multiply(m4.yRotation(starRotate),m4.yRotation(starRevolve)),      
       u_diffuse: colors[1],
       u_lightDirection: [ldx, ldy, ldz],
       u_transformation: transformationMatrix,
