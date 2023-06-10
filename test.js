@@ -93,6 +93,11 @@ function parseOBJ(text) {
   };
 }
 
+function getRandomFloat(min, max, decimals) {
+  const str = (Math.random() * (max - min) + min).toFixed(decimals);
+  return parseFloat(str);
+}
+
 async function main() {
   // Get A WebGL context
   /** @type {HTMLCanvasElement} */
@@ -161,12 +166,11 @@ async function main() {
   const bufferInfo = webglUtils.createBufferInfoFromArrays(gl, data);
   const bufferInfo2 = webglUtils.createBufferInfoFromArrays(gl, data1);
 
-  let tx = 0, ty = 0;
   let transformationMatrix = [
     1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, 1, 0,
-    tx, ty, 0, 1
+    0, 0, 0, 1
   ];
 
   const cameraTarget = [0, 0, 0];
@@ -182,6 +186,7 @@ async function main() {
   let speed_mult = 1;
 
   let ldx = 1.0, ldy = 1.0, ldz = 1.0;
+  let colors = [[1, 0.7, 0.5, 1], [1, 0.7, 0.5, 1]];
   //sliders for light direction
   let xldslider = document.getElementById("x-lightdir");
   let yldslider = document.getElementById("y-lightdir");
@@ -222,12 +227,22 @@ async function main() {
       transformationMatrix[13] += 0.1;
     } else if (event.key == 'S' || event.key == "s") {
       transformationMatrix[13] -= 0.1;
-    } else if (event.key == ' ') {
+    } else if (event.key == 'R' || event.key == "r") {
       cameraPosition[1] = 0;
+    } else if (event.key == ' ') {
+
+      for (let i = 0; i < colors.length; i++) {
+
+        // get the length of the inner array elements
+        let innerArrayLength = colors[i].length;
+
+        // looping inner array elements
+        for (let j = 0; j < innerArrayLength - 1; j++) {
+          colors[i][j] = getRandomFloat(0, 1, 2);
+        }
+      }
     }
-
   }, false);
-
 
   function render(time) {
     time *= 0.001 * speed_mult;  // convert to seconds
@@ -270,7 +285,7 @@ async function main() {
     // calls gl.uniform
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.yRotation(-time),
-      u_diffuse: [1, 0.7, 0.5, 1],
+      u_diffuse: colors[0],
       u_lightDirection: [ldx, ldy, ldz],
       u_transformation: transformationMatrix,
     });
@@ -291,7 +306,7 @@ async function main() {
     webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo2);
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.yRotation(-time),
-      u_diffuse: [1, 0.7, 0.5, 1],
+      u_diffuse: colors[1],
       u_lightDirection: [ldx, ldy, ldz],
       u_transformation: transformationMatrix,
     });
