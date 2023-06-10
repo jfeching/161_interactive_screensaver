@@ -106,6 +106,7 @@ async function main() {
   attribute vec4 a_position;
   attribute vec3 a_normal;
 
+  uniform mat4 u_transformation;
   uniform mat4 u_projection;
   uniform mat4 u_view;
   uniform mat4 u_world;
@@ -113,7 +114,7 @@ async function main() {
   varying vec3 v_normal;
 
   void main() {
-    gl_Position = u_projection * u_view * u_world * a_position;
+    gl_Position = u_transformation*u_projection * u_view * u_world * a_position;
     v_normal = mat3(u_world) * a_normal;
   }
   `;
@@ -160,6 +161,14 @@ async function main() {
   const bufferInfo = webglUtils.createBufferInfoFromArrays(gl, data);
   const bufferInfo2 = webglUtils.createBufferInfoFromArrays(gl, data1);
 
+  let tx = 0, ty = 0;
+  let transformationMatrix = [
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    tx, ty, 0, 1
+  ];
+
   const cameraTarget = [0, 0, 0];
   const cameraPosition = [0, 0, 4];
   const zNear = 0.1;
@@ -205,6 +214,14 @@ async function main() {
     if (event.key == 'T' || event.key == "t") {
       cameraPosition[1] = 10;
       //Press spacebar to reset
+    } else if (event.key == 'A' || event.key == "a") {
+      transformationMatrix[12] -= 0.1;
+    } else if (event.key == 'D' || event.key == "d") {
+      transformationMatrix[12] += 0.1;
+    } else if (event.key == 'W' || event.key == "w") {
+      transformationMatrix[13] += 0.1;
+    } else if (event.key == 'S' || event.key == "s") {
+      transformationMatrix[13] -= 0.1;
     } else if (event.key == ' ') {
       cameraPosition[1] = 0;
     }
@@ -236,6 +253,7 @@ async function main() {
       u_lightDirection: m4.normalize([-1, 3, 5]),
       u_view: view,
       u_projection: projection,
+      u_transformation: transformationMatrix,
     };
 
     gl.useProgram(meshProgramInfo.program);
@@ -246,11 +264,15 @@ async function main() {
     // calls gl.bindBuffer, gl.enableVertexAttribArray, gl.vertexAttribPointer
     webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo);
 
+    // m4.translate(transformationMatrix, 0, 0, 0, transformationMatrix);
+    // let rotate = m4.yRotate(transformationMatrix, time);
+    // m4.translate(transformationMatrix, 0, 0, 0, transformationMatrix);
     // calls gl.uniform
     webglUtils.setUniforms(meshProgramInfo, {
-      u_world: m4.yRotation(time),
+      u_world: m4.yRotation(-time),
       u_diffuse: [1, 0.7, 0.5, 1],
-      u_lightDirection: [ldx, ldy, ldz]
+      u_lightDirection: [ldx, ldy, ldz],
+      u_transformation: transformationMatrix,
     });
 
     // calls gl.drawArrays or gl.drawElements
@@ -270,7 +292,8 @@ async function main() {
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.yRotation(-time),
       u_diffuse: [1, 0.7, 0.5, 1],
-      u_lightDirection: [ldx, ldy, ldz]
+      u_lightDirection: [ldx, ldy, ldz],
+      u_transformation: transformationMatrix,
     });
 
     webglUtils.drawBufferInfo(gl, bufferInfo2);
