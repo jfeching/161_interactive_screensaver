@@ -1,6 +1,7 @@
 body {
     margin: 0;
     background-image: url("object_files/bg.jpg");
+    background-size: cover;
     color: white;
 }
 
