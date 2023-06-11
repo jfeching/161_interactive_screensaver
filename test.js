@@ -98,6 +98,22 @@ function getRandomFloat(min, max, decimals) {
   return parseFloat(str);
 }
 
+//will update the colors of the spheres
+function updateColor(colors, addends) {
+  for (let i = 0; i < colors.length; i++) {
+    // get the length of the inner array elements
+    let innerArrayLength = colors[i].length;
+
+    // looping inner array elements
+    for (let j = 0; j < innerArrayLength - 1; j++) {
+      colors[i][j] += addends[i][j];
+      if (colors[i][j] >= 1.0 || colors[i][j] <= 0.0) addends[i][j] *= -1;
+    }
+  }
+}
+
+
+
 async function main() {
   // Get A WebGL context
   /** @type {HTMLCanvasElement} */
@@ -220,6 +236,7 @@ async function main() {
 
   let ldx = 1.0, ldy = 1.0, ldz = 1.0;
   let colors = [[1, 0.7, 0.5, 1], [1, 0.7, 0.5, 1]];
+  let addends = [[0.001, 0.001, 0.001, 0], [0.001, 0.001, 0.001, 0]];
   //sliders for light direction
   let xldslider = document.getElementById("x-lightdir");
   let yldslider = document.getElementById("y-lightdir");
@@ -263,7 +280,6 @@ async function main() {
     } else if (event.key == 'R' || event.key == "r") {
       cameraPosition[1] = 0;
     } else if (event.key == ' ') {
-
       for (let i = 0; i < colors.length; i++) {
 
         // get the length of the inner array elements
@@ -280,14 +296,14 @@ async function main() {
   /**Compute matrix
    * - basically ensures that the object is revolving correctly
    */
-  function computeMatrix(viewProjectionMatrix,translation,Rotate,Revolve) {
+  function computeMatrix(viewProjectionMatrix, translation, Rotate, Revolve) {
     var matrix = viewProjectionMatrix;
-    matrix = m4.yRotate(matrix,Rotate);
+    matrix = m4.yRotate(matrix, Rotate);
     matrix = m4.translate(matrix,
       translation[0],
       translation[1],
       translation[2]);
-    matrix = m4.yRotate(matrix,Revolve);
+    matrix = m4.yRotate(matrix, Revolve);
     return matrix;
   }
 
@@ -310,11 +326,11 @@ async function main() {
     const view = m4.inverse(camera);
 
     gl.useProgram(meshProgramInfo.program);
-    
+
     // Compute viewProjectionMatrix
     const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-    const viewProjectionMatrix = m4.multiply(projection,view);
-    
+    const viewProjectionMatrix = m4.multiply(projection, view);
+
     /**
      * PLANET
      * Requires:
@@ -329,14 +345,15 @@ async function main() {
      *  - world rotation and planet rotation must match
      * - draw
      */
-    var planetTranslate = [-4,0,0];
+    var planetTranslate = [-4, 0, 0];
     var planetRotate = time;
     var planetRevolve = time;
-    
+
+    updateColor(colors, addends);
     // sets the revolution
-    const planetUniforms = { 
+    const planetUniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
-      u_matrix: computeMatrix(viewProjectionMatrix,planetTranslate,planetRotate,planetRevolve),
+      u_matrix: computeMatrix(viewProjectionMatrix, planetTranslate, planetRotate, planetRevolve),
     };
 
     // calls gl.uniform
@@ -347,7 +364,7 @@ async function main() {
     // u_world must match rotate * revolve, thus we have multiply
     // if not, maiiwan ang calculation ng light direction
     webglUtils.setUniforms(meshProgramInfo, {
-      u_world: m4.multiply(m4.yRotation(planetRotate),m4.yRotation(planetRevolve)),      
+      u_world: m4.multiply(m4.yRotation(planetRotate), m4.yRotation(planetRevolve)),
       u_diffuse: colors[0],
       u_lightDirection: [ldx, ldy, ldz],
       u_transformation: transformationMatrix,
@@ -355,24 +372,24 @@ async function main() {
     // calls gl.drawArrays or gl.drawElements
     webglUtils.drawBufferInfo(gl, planetBufferInfo);
 
-    
+
     /**
      * STAR
      * Procedure is same for PLANET except no translate and revolve
     */
-    var starTranslate = [0,0,0];
+    var starTranslate = [0, 0, 0];
     var starRotate = -time;
     var starRevolve = 0;
 
     const starUniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
-      u_matrix: computeMatrix(viewProjectionMatrix,starTranslate,starRotate,starRevolve),
+      u_matrix: computeMatrix(viewProjectionMatrix, starTranslate, starRotate, starRevolve),
     };
 
     webglUtils.setUniforms(meshProgramInfo, starUniforms);
     webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, starBufferInfo);
     webglUtils.setUniforms(meshProgramInfo, {
-      u_world: m4.multiply(m4.yRotation(starRotate),m4.yRotation(starRevolve)),      
+      u_world: m4.multiply(m4.yRotation(starRotate), m4.yRotation(starRevolve)),
       u_diffuse: colors[1],
       u_lightDirection: [ldx, ldy, ldz],
       u_transformation: transformationMatrix,
