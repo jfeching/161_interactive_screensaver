@@ -8,7 +8,6 @@ _An interactive screensaver_
 `format: LastName, GivenName Initial | Student number`
 
 * Ching, John Francis Benjamin E. | 2020-11202
-* Guerrero
 * Jimenez, Christoper Marlo G. | 2020-05310
 * Rayel, Carlos Angelo L. | 2019-06913
 
