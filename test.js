@@ -197,6 +197,10 @@ async function main() {
   const starText = await starResponse.text();
   const starData = parseOBJ(starText);
 
+  const moonResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/green_ball.obj');
+  const moonText = await moonResponse.text();
+  const moonData = parseOBJ(moonText);
+
   // Because planetData is just named arrays like this
   //
   // {
@@ -213,6 +217,7 @@ async function main() {
   // gl.createBuffer, gl.bindBuffer, gl.bufferData
   const planetBufferInfo = webglUtils.createBufferInfoFromArrays(gl, planetData);
   const starBufferInfo = webglUtils.createBufferInfoFromArrays(gl, starData);
+  const moonBufferInfo = webglUtils.createBufferInfoFromArrays(gl, moonData);
 
   let transformationMatrix = [
     1, 0, 0, 0,
@@ -235,8 +240,8 @@ async function main() {
   let speed_mult = 1;
 
   let ldx = 1.0, ldy = 1.0, ldz = 1.0;
-  let colors = [[1, 0.7, 0.5, 1], [1, 0.7, 0.5, 1]];
-  let addends = [[0.001, 0.001, 0.001, 0], [0.001, 0.001, 0.001, 0]];
+  let colors = [[1, 0.7, 0.5, 1], [1, 0.7, 0.5, 1], [1, 0.7, 0.5, 1]];
+  let addends = [[0.001, 0.001, 0.001, 0], [0.001, 0.001, 0.001, 0], [0.001, 0.001, 0.001, 0]];
   //sliders for light direction
   let xldslider = document.getElementById("x-lightdir");
   let yldslider = document.getElementById("y-lightdir");
@@ -350,6 +355,7 @@ async function main() {
     var planetRevolve = time;
 
     updateColor(colors, addends);
+
     // sets the revolution
     const planetUniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
@@ -373,6 +379,32 @@ async function main() {
     webglUtils.drawBufferInfo(gl, planetBufferInfo);
 
 
+    var moonTranslate = [-6, 1, 0];
+    var moonRotate = -time * 0.8;
+    var moonRevolve = time * 0.8;
+
+    // sets the revolution
+    const moonUniforms = {
+      u_lightDirection: m4.normalize([-1, 3, 5]),
+      u_matrix: computeMatrix(viewProjectionMatrix, moonTranslate, moonRotate, moonRevolve),
+    };
+
+    // calls gl.uniform
+    webglUtils.setUniforms(meshProgramInfo, moonUniforms);
+    // calls gl.bindBuffer, gl.enableVertexAttribArray, gl.vertexAttribPointer
+    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, moonBufferInfo);
+    // calls gl.uniform
+    // u_world must match rotate * revolve, thus we have multiply
+    // if not, maiiwan ang calculation ng light direction
+    webglUtils.setUniforms(meshProgramInfo, {
+      u_world: m4.multiply(m4.yRotation(moonRotate), m4.yRotation(moonRevolve)),
+      u_diffuse: colors[1],
+      u_lightDirection: [ldx, ldy, ldz],
+      u_transformation: transformationMatrix,
+    });
+    // calls gl.drawArrays or gl.drawElements
+    webglUtils.drawBufferInfo(gl, moonBufferInfo);
+
     /**
      * STAR
      * Procedure is same for PLANET except no translate and revolve
@@ -390,7 +422,7 @@ async function main() {
     webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, starBufferInfo);
     webglUtils.setUniforms(meshProgramInfo, {
       u_world: m4.multiply(m4.yRotation(starRotate), m4.yRotation(starRevolve)),
-      u_diffuse: colors[1],
+      u_diffuse: colors[2],
       u_lightDirection: [ldx, ldy, ldz],
       u_transformation: transformationMatrix,
     });
