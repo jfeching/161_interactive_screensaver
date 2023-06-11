@@ -3,6 +3,7 @@ body {
     background-image: url("object_files/bg.jpg");
     background-size: cover;
     color: white;
+    font-family: monospace;
 }
 
 #output {
@@ -10,6 +11,10 @@ body {
     width: 100vw;
     height: 100vh;
     display: block;
+}
+
+hr {
+    width: 80%;
 }
 
 .main{
@@ -25,7 +30,6 @@ body {
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(15px);
-    padding: 3px;  
     display: flex;
     flex-wrap: wrap;
     position: absolute;
@@ -50,4 +54,13 @@ body {
     align-items: center;
     flex-wrap: wrap;
     justify-content: center;
+    margin-top: 5%;
+}
+
+.credits {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5%;
 }
