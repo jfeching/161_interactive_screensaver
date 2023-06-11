@@ -1,12 +1,52 @@
 body {
     margin: 0;
-    background-color: black;
+    background-image: url("object_files/bg.jpg");
     color: white;
-
 }
 
 #output {
+    z-index: 0;
     width: 100vw;
     height: 100vh;
     display: block;
+}
+
+.main{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sliderContainer {
+    display: block;
+    z-index: 1;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    padding: 3px;  
+    display: flex;
+    flex-wrap: wrap;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    width: 50vh;
+    top: 10%;
+    left: 5%;
+}
+
+.invisible {
+    display: none !important;
+}
+
+.break {
+    flex-basis: 100%;
+    height: 0;
+  }
+
+.lightdirslider, .eyepointslider {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
 }
