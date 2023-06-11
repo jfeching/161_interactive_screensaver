@@ -270,10 +270,17 @@ async function main() {
 
   //listens to keyboard events
   sliders = document.getElementById("sliders");
+  var isTopView = false;
   document.addEventListener('keydown', (event) => {
     //Press T to move the camera position to "top view"
     if (event.key == 'T' || event.key == "t") {
-      cameraPosition[1] = 10;
+      if(!isTopView){
+        cameraPosition[1] = 10;
+        isTopView = true;
+      } else {
+        cameraPosition[1] = 0;
+        isTopView = false;
+      }
       //Press spacebar to reset
     } else if (event.key == 'A' || event.key == "a") {
       transformationMatrix[12] -= 0.1;
