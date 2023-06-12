@@ -124,6 +124,15 @@ function updateColor(colors, addends) {
     }
   }
 }
+function setCameraPos(num, camera, tid, isTopView) {
+  camera[1] += num;
+  if (camera[1] == 0 || camera[1] == 10) {
+    if (camera[1] == 0) isTopView[0] = false;
+    else if (camera[1] == 10) isTopView[0] = true;
+    isTopView[1] = false;
+    clearInterval(tid);
+  }
+}
 
 async function main() {
   // Get A WebGL context
@@ -289,18 +298,23 @@ async function main() {
   //listens to keyboard events
   let sliders = document.getElementById("sliders");
   let credits = document.getElementById("credits");
-  var isTopView = false;
+  var isTopView = [false, false];
+  let tid;
   document.addEventListener('keydown', (event) => {
     //Press T to move the camera position to "top view"
     if (event.key == 'T' || event.key == "t") {
-      if (!isTopView) {
-        cameraPosition[1] = 10;
-        isTopView = true;
-      } else {
-        cameraPosition[1] = 0;
-        isTopView = false;
+      if (!isTopView[0] && !isTopView[1]) {
+        isTopView[1] = true;
+        tid = setInterval(function () { setCameraPos(1, cameraPosition, tid, isTopView); }, 10);
+        //cameraPosition[1] = 10;
+        //isTopView[0] = true;
+      } else if (isTopView[0] && !isTopView[1]) {
+        isTopView[1] = true;
+        tid = setInterval(function () { setCameraPos(-1, cameraPosition, tid, isTopView); }, 10);
+        //cameraPosition[1] = 0;
+        //isTopView[0] = false;
       }
-      //Press spacebar to reset
+      //WASD for translation
     } else if (event.key == 'A' || event.key == "a") {
       transformationMatrix[12] -= 0.1;
     } else if (event.key == 'D' || event.key == "d") {
@@ -318,7 +332,7 @@ async function main() {
         credits.classList.add("invisible");
       }
     } else if (event.key == ' ') {
-      //randomized the colors of the objects
+      // press spacebar randomized the colors of the objects
       for (let i = 0; i < colors.length; i++) {
         // get the length of the inner array elements
         let innerArrayLength = colors[i].length;
@@ -355,16 +369,18 @@ async function main() {
     matrix = m4.yRotate(matrix, Rotate);
     return matrix;
   }
-
+  if (cameraPosition[1] == 0 || cameraPosition[1] == 10) {
+    clearInterval(tid);
+  }
   var moon1Distance = 4;
   var moon2Distance = 6;
 
   function render(time) {
     time *= 0.001 * speed_mult;  // convert to seconds\
     // let rand = getRandomFloat(-0.0001,0.0001,4);
-    for (let i=0; i<addends.length;i++){
-      for (let j=0; j<addends[0].length-1; j++) {
-        addends[i][j] += getRandomFloat(-0.0001,0.0001,4);
+    for (let i = 0; i < addends.length; i++) {
+      for (let j = 0; j < addends[0].length - 1; j++) {
+        addends[i][j] += getRandomFloat(-0.0001, 0.0001, 4);
       }
     }
 
