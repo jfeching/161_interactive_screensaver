@@ -194,15 +194,15 @@ async function main() {
   console.log("is error?");
 
   // Moon 1
-  const moon1Response = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/brown_ball.obj');
+  const moon1Response = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/src/object_files/brown_ball.obj');
   const moon1Text = await moon1Response.text();
   const moon1Data = parseOBJ(moon1Text);
   // Moon 2
-  const moon2Response = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/green_ball.obj');
+  const moon2Response = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/src/object_files/green_ball.obj');
   const moon2Text = await moon2Response.text();
   const moon2Data = parseOBJ(moon2Text);
   // Planet
-  const planetResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/yellow_ball.obj');
+  const planetResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/src/object_files/yellow_ball.obj');
   const planetText = await planetResponse.text();
   const planetData = parseOBJ(planetText);
 
