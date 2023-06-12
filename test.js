@@ -17,7 +17,7 @@
 // see http://paulbourke.net/dataformats/obj/
 
 function parseOBJ(text) {
-  // because indices are base 1 let's just fill in the 0th planetData
+  // because indices are base 1 let's just fill in the 0th moon1Data
   const objPositions = [[0, 0, 0]];
   const objTexcoords = [[0, 0]];
   const objNormals = [[0, 0, 0]];
@@ -39,7 +39,7 @@ function parseOBJ(text) {
   function newGeometry() {
     // If there is an existing geometry and it's
     // not empty then start a new one.
-    if (geometry && geometry.planetData.position.length) {
+    if (geometry && geometry.moon1Data.position.length) {
       geometry = undefined;
     }
     setGeometry();
@@ -201,26 +201,20 @@ async function main() {
   const meshProgramInfo = webglUtils.createProgramInfo(gl, [smoothVs, fs]);
   console.log("is error?");
 
-  /**FOR THE OTHER DEVS
-   * I got rid of practice_1.obj - Carlos
-   */
-  // const planetResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/practice_1.obj');
-  // const planetText = await planetResponse.planetText();
-  // const planetData = parseOBJ(planetText);
-  // Star Object
-  const planetResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/brown_ball.obj');
+  // Moon 1
+  const moon1Response = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/brown_ball.obj');
+  const moon1Text = await moon1Response.text();
+  const moon1Data = parseOBJ(moon1Text);
+  // Moon 2
+  const moon2Response = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/green_ball.obj');
+  const moon2Text = await moon2Response.text();
+  const moon2Data = parseOBJ(moon2Text);
+  // Planet
+  const planetResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/yellow_ball.obj');
   const planetText = await planetResponse.text();
   const planetData = parseOBJ(planetText);
-  // Brown Ball object
-  const starResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/yellow_ball.obj');
-  const starText = await starResponse.text();
-  const starData = parseOBJ(starText);
 
-  const moonResponse = await fetch('https://raw.githubusercontent.com/jfeching/161_interactive_screensaver/main/object_files/green_ball.obj');
-  const moonText = await moonResponse.text();
-  const moonData = parseOBJ(moonText);
-
-  // Because planetData is just named arrays like this
+  // Because moon1Data is just named arrays like this
   //
   // {
   //   position: [...],
@@ -234,9 +228,9 @@ async function main() {
 
   // create a buffer for each array by calling
   // gl.createBuffer, gl.bindBuffer, gl.bufferData
+  const moon1BufferInfo = webglUtils.createBufferInfoFromArrays(gl, moon1Data);
   const planetBufferInfo = webglUtils.createBufferInfoFromArrays(gl, planetData);
-  const starBufferInfo = webglUtils.createBufferInfoFromArrays(gl, starData);
-  const moonBufferInfo = webglUtils.createBufferInfoFromArrays(gl, moonData);
+  const moon2BufferInfo = webglUtils.createBufferInfoFromArrays(gl, moon2Data);
 
   let transformationMatrix = [
     1, 0, 0, 0,
@@ -370,13 +364,12 @@ async function main() {
     return matrix;
   }
 
-  var planetDistance = 4;
-  var moonDistance = 6;
+  var moon1Distance = 4;
+  var moon2Distance = 6;
 
   function render(time) {
     time *= 0.001 * speed_mult;  // convert to seconds\
     // let rand = getRandomFloat(-0.0001,0.0001,4);
-    // addends = [[rand, rand, rand, 0], [rand, rand, rand, 0], [rand, rand, rand, 0]];
     for (let i=0; i<addends.length;i++){
       for (let j=0; j<addends[0].length-1; j++) {
         addends[i][j] += getRandomFloat(-0.0001,0.0001,4);
@@ -419,88 +412,88 @@ async function main() {
      * - draw
      */
 
-    // var planetTranslate = [-4, 0, 0];
-    planetDistance = randomOrbit(4,7,planetDistance);
-    var planetTranslate = [-planetDistance, 0, 0];
-    var planetRotate = time;
-    var planetRevolve = time;
+    // var moon1Translate = [-4, 0, 0];
+    moon1Distance = randomOrbit(4,8,moon1Distance);
+    var moon1Translate = [-moon1Distance, 0, 0];
+    var moon1Rotate = time;
+    var moon1Revolve = time;
 
     updateColor(colors, addends);
 
     // sets the revolution
-    const planetUniforms = {
+    const moon1Uniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
-      u_matrix: computeMatrix(viewProjectionMatrix, planetTranslate, planetRotate, planetRevolve),
+      u_matrix: computeMatrix(viewProjectionMatrix, moon1Translate, moon1Rotate, moon1Revolve),
     };
 
     // calls gl.uniform
-    webglUtils.setUniforms(meshProgramInfo, planetUniforms);
+    webglUtils.setUniforms(meshProgramInfo, moon1Uniforms);
     // calls gl.bindBuffer, gl.enableVertexAttribArray, gl.vertexAttribPointer
-    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, planetBufferInfo);
+    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, moon1BufferInfo);
     // calls gl.uniform
     // u_world must match rotate * revolve, thus we have multiply
     // if not, maiiwan ang calculation ng light direction
     webglUtils.setUniforms(meshProgramInfo, {
-      u_world: m4.multiply(m4.yRotation(planetRotate), m4.yRotation(planetRevolve)),
+      u_world: m4.multiply(m4.yRotation(moon1Rotate), m4.yRotation(moon1Revolve)),
       u_diffuse: colors[0],
       u_lightDirection: [ldx, ldy, ldz],
       u_transformation: transformationMatrix,
     });
     // calls gl.drawArrays or gl.drawElements
-    webglUtils.drawBufferInfo(gl, planetBufferInfo);
+    webglUtils.drawBufferInfo(gl, moon1BufferInfo);
 
 
-    // var moonTranslate = [-6, 1, 0];
-    moonDistance = randomOrbit(5,8,moonDistance);
-    var moonTranslate = [-moonDistance, 1, 0];
-    var moonRotate = -time * 0.8;
-    var moonRevolve = time * 0.8;
+    // var moon2Translate = [-6, 1, 0];
+    moon2Distance = randomOrbit(5,9,moon2Distance);
+    var moon2Translate = [-moon2Distance, 1, 0];
+    var moon2Rotate = -time * 0.8;
+    var moon2Revolve = time * 0.8;
 
     // sets the revolution
-    const moonUniforms = {
+    const moon2Uniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
-      u_matrix: computeMatrix(viewProjectionMatrix, moonTranslate, moonRotate, moonRevolve),
+      u_matrix: computeMatrix(viewProjectionMatrix, moon2Translate, moon2Rotate, moon2Revolve),
     };
 
     // calls gl.uniform
-    webglUtils.setUniforms(meshProgramInfo, moonUniforms);
+    webglUtils.setUniforms(meshProgramInfo, moon2Uniforms);
     // calls gl.bindBuffer, gl.enableVertexAttribArray, gl.vertexAttribPointer
-    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, moonBufferInfo);
+    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, moon2BufferInfo);
     // calls gl.uniform
     // u_world must match rotate * revolve, thus we have multiply
     // if not, maiiwan ang calculation ng light direction
     webglUtils.setUniforms(meshProgramInfo, {
-      u_world: m4.multiply(m4.yRotation(moonRotate), m4.yRotation(moonRevolve)),
+      u_world: m4.multiply(m4.yRotation(moon2Rotate), m4.yRotation(moon2Revolve)),
       u_diffuse: colors[1],
       u_lightDirection: [ldx, ldy, ldz],
       u_transformation: transformationMatrix,
     });
     // calls gl.drawArrays or gl.drawElements
-    webglUtils.drawBufferInfo(gl, moonBufferInfo);
+    webglUtils.drawBufferInfo(gl, moon2BufferInfo);
 
     /**
      * STAR
      * Procedure is same for PLANET except no translate and revolve
     */
-    var starTranslate = [0, 0, 0];
-    var starRotate = -time;
-    var starRevolve = 0;
+    var planetTranslate = [0, 0, 0];
+    var planetRotate = -time;
+    var planetRevolve = 0;
 
-    const starUniforms = {
+    const planetUniforms = {
       u_lightDirection: m4.normalize([-1, 3, 5]),
-      u_matrix: computeMatrix(viewProjectionMatrix, starTranslate, starRotate, starRevolve),
+      u_matrix: computeMatrix(viewProjectionMatrix, planetTranslate, planetRotate, planetRevolve),
     };
 
-    webglUtils.setUniforms(meshProgramInfo, starUniforms);
-    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, starBufferInfo);
+    webglUtils.setUniforms(meshProgramInfo, planetUniforms);
+    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, planetBufferInfo);
     webglUtils.setUniforms(meshProgramInfo, {
-      u_world: m4.multiply(m4.yRotation(starRotate), m4.yRotation(starRevolve)),
+      u_world: m4.multiply(m4.yRotation(planetRotate), m4.yRotation(planetRevolve)),
       u_diffuse: colors[2],
       u_lightDirection: [ldx, ldy, ldz],
       u_transformation: transformationMatrix,
     });
 
-    webglUtils.drawBufferInfo(gl, starBufferInfo);
+    webglUtils.drawBufferInfo(gl, planetBufferInfo);
 
     // loops the animation
     requestAnimationFrame(render);

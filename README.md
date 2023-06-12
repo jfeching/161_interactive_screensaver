@@ -18,10 +18,10 @@ The program is an interactive screensaver project created in fulfilment of the r
 ## Elements
 
 The following is an outline of the elements within the program:
-* 1 Sun
-* 2 Planets
-  * Red Planet
-  * Blue Planet
+* 1 Planet
+* 2 Moons
+  * Moon 1
+  * Moon 2
 
 ## Interactions
 
