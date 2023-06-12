@@ -36,3 +36,7 @@ The following is an outline of interactions within the program:
 * Pressing `T` will change the view to a higher POV or reset it
 * Pressing `SPACEBAR` will randomize the color of the of the planet and its moons
 * Pressing `WSAD` will translate the of the planet and its moons to a direction depending on the key pressed.
+
+## Attributions
+
+- Background image taken from https://www.pexels.com/photo/white-and-black-light-streaks-3648850/ ; it is free to use and no license is needed.
