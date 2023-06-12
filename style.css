@@ -1,16 +1,25 @@
 body {
     margin: 0;
-    background-image: url("object_files/bg.jpg");
-    background-size: cover;
     color: white;
     font-family: monospace;
+    background-color: black;
 }
 
 #output {
-    z-index: 0;
     width: 100vw;
     height: 100vh;
     display: block;
+}
+
+.background {
+    background-image: url("object_files/bg.jpg");
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    z-index: -5;
+    width: 100vw;
+    height: 100vh;
+    animation: blink 10s infinite ease-in-out;
 }
 
 hr {
@@ -24,7 +33,7 @@ hr {
     align-items: center;
 }
 
-.sliderContainer {
+.optionsContainer {
     display: block;
     z-index: 1;
     border-radius: 8px;
@@ -36,8 +45,8 @@ hr {
     align-items: center;
     justify-content: center;
     width: 50vh;
-    top: 10%;
-    left: 5%;
+    top: 5%;
+    left: 3%;
 }
 
 .invisible {
@@ -57,10 +66,57 @@ hr {
     margin-top: 5%;
 }
 
+.lightdirslider {
+    margin-bottom: 5%;
+}
+
 .credits {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     margin-bottom: 5%;
+    margin-top: 5%;
+    padding-left: 3%;
+    padding-right: 3%;
+}
+
+.instructions {
+    text-align: left;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+ul {
+    text-align: center;
+    list-style-type: none;
+    padding: 0;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+    
+    100% {
+        opacity: 1;
+    }
+}
+
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: 0.85em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
 }
