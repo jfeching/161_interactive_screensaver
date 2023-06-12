@@ -121,6 +121,8 @@ function updateColor(colors, addends) {
     for (let j = 0; j < innerArrayLength - 1; j++) {
       if (colors[i][j] >= 1.0 || colors[i][j] <= 0.0) addends[i][j] *= -1;
       colors[i][j] += addends[i][j];
+      addends[i][j] += getRandomFloat(-0.0001, 0.0001, 4);
+      if (addends[i][j] == 0.1 || addends[i][j] == -0.1) addends[i][j] = 0.001;
     }
   }
 }
@@ -305,12 +307,12 @@ async function main() {
     if (event.key == 'T' || event.key == "t") {
       if (!isTopView[0] && !isTopView[1]) {
         isTopView[1] = true;
-        tid = setInterval(function () { setCameraPos(1, cameraPosition, tid, isTopView); }, 10);
+        tid = setInterval(function () { setCameraPos(1, cameraPosition, tid, isTopView); }, 25);
         //cameraPosition[1] = 10;
         //isTopView[0] = true;
       } else if (isTopView[0] && !isTopView[1]) {
         isTopView[1] = true;
-        tid = setInterval(function () { setCameraPos(-1, cameraPosition, tid, isTopView); }, 10);
+        tid = setInterval(function () { setCameraPos(-1, cameraPosition, tid, isTopView); }, 25);
         //cameraPosition[1] = 0;
         //isTopView[0] = false;
       }
@@ -381,12 +383,6 @@ async function main() {
 
   function render(time) {
     time *= 0.001 * speed_mult;  // convert to seconds\
-    // let rand = getRandomFloat(-0.0001,0.0001,4);
-    for (let i = 0; i < addends.length; i++) {
-      for (let j = 0; j < addends[0].length - 1; j++) {
-        addends[i][j] += getRandomFloat(-0.0001, 0.0001, 4);
-      }
-    }
 
     // Resizing canvas and enabling options
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
