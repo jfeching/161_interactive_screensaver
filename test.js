@@ -125,14 +125,6 @@ function updateColor(colors, addends) {
   }
 }
 
-function randomOrbit(min,max,val) {
-  const rand = getRandomFloat(-0.01,0.01,1);
-  let temp = val + rand;
-  if (temp >= max) temp = val - rand;
-  if (temp <= min) temp = val + rand;
-  return temp;
-}
-
 async function main() {
   // Get A WebGL context
   /** @type {HTMLCanvasElement} */
@@ -196,9 +188,9 @@ async function main() {
 
   // compiles and links the shaders, looks up attribute and uniform locations
   // Regular cube-like normals
-  // const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
+  const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
   // Smooth lighting normals
-  const meshProgramInfo = webglUtils.createProgramInfo(gl, [smoothVs, fs]);
+  // const meshProgramInfo = webglUtils.createProgramInfo(gl, [smoothVs, fs]);
   console.log("is error?");
 
   // Moon 1
@@ -355,12 +347,12 @@ async function main() {
    */
   function computeMatrix(viewProjectionMatrix, translation, Rotate, Revolve) {
     var matrix = viewProjectionMatrix;
-    matrix = m4.yRotate(matrix, Rotate);
+    matrix = m4.yRotate(matrix, Revolve);
     matrix = m4.translate(matrix,
       translation[0],
       translation[1],
       translation[2]);
-    matrix = m4.yRotate(matrix, Revolve);
+    matrix = m4.yRotate(matrix, Rotate);
     return matrix;
   }
 
@@ -398,7 +390,7 @@ async function main() {
     const viewProjectionMatrix = m4.multiply(projection, view);
 
     /**
-     * PLANET
+     * MOON 1
      * Requires:
      * - modified viewprojection
      *  - set planet rotation and revolution
@@ -412,9 +404,7 @@ async function main() {
      * - draw
      */
 
-    // var moon1Translate = [-4, 0, 0];
-    moon1Distance = randomOrbit(4,8,moon1Distance);
-    var moon1Translate = [-moon1Distance, 0, 0];
+    var moon1Translate = [-4, 0, 0];
     var moon1Rotate = time;
     var moon1Revolve = time;
 
@@ -442,12 +432,13 @@ async function main() {
     // calls gl.drawArrays or gl.drawElements
     webglUtils.drawBufferInfo(gl, moon1BufferInfo);
 
-
-    // var moon2Translate = [-6, 1, 0];
-    moon2Distance = randomOrbit(5,9,moon2Distance);
-    var moon2Translate = [-moon2Distance, 1, 0];
-    var moon2Rotate = -time * 0.8;
-    var moon2Revolve = time * 0.8;
+    /**
+     * MOON 2
+     * Procedure is the same for MOON 1
+     */
+    var moon2Translate = [-6, 1, 0];
+    var moon2Rotate = time * 0.8;
+    var moon2Revolve = -time * 0.8;
 
     // sets the revolution
     const moon2Uniforms = {
@@ -472,8 +463,8 @@ async function main() {
     webglUtils.drawBufferInfo(gl, moon2BufferInfo);
 
     /**
-     * STAR
-     * Procedure is same for PLANET except no translate and revolve
+     * PLANET
+     * Procedure is same except no translate and revolve
     */
     var planetTranslate = [0, 0, 0];
     var planetRotate = -time;
