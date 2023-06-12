@@ -39,6 +39,7 @@ hr {
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     display: flex;
     flex-wrap: wrap;
     position: absolute;
@@ -56,6 +57,7 @@ hr {
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     display: flex;
     flex-wrap: wrap;
     position: absolute;
