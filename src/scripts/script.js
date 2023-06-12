@@ -324,12 +324,16 @@ async function main() {
     } else if (event.key == 'S' || event.key == "s") {
       transformationMatrix[13] -= 0.1;
     } else if (event.key == 'O' || event.key == 'o') {
-      if (sliders.classList.contains("invisible")) {
-        credits.classList.remove("invisible");
+      if (sliders.classList.contains("invisibleO")) {
+        sliders.classList.remove("invisibleO");
+        credits.classList.remove("invisibleC");
+
+        // for the initial loading of the page
         sliders.classList.remove("invisible");
+        credits.classList.remove("invisible");
       } else {
-        sliders.classList.add("invisible");
-        credits.classList.add("invisible");
+        sliders.classList.add("invisibleO");
+        credits.classList.add("invisibleC");
       }
     } else if (event.key == ' ') {
       // press spacebar randomized the colors of the objects

@@ -48,7 +48,8 @@ hr {
     width: 50vh;
     top: 5%;
     left: 3%;
-    animation: slideInLeft 1s;
+    opacity: 1;
+    animation: slideInLeft 1s ease-in-out;
 }
 
 .creditsContainer {
@@ -66,11 +67,23 @@ hr {
     width: 50vh;
     top: 5%;
     right: 3%;
-    animation: slideInRight 1s;
+    animation: slideInUp 1s ease-in-out;
 }
 
 .invisible {
-    display: none !important;
+    display: none;
+}
+
+.invisibleO {
+    animation: slideOutLeft 1s;
+    opacity: 0;
+    z-index: -25;
+}
+
+.invisibleC {
+    animation: slideOutUp 1s;
+    opacity: 0;
+    z-index: -25;
 }
 
 .break {
@@ -134,20 +147,64 @@ ul {
 @keyframes slideInLeft {
     0% {
         transform: translateX(-200px);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0.5;
     }
 
     100% {
         transform: translateX(0);
+        opacity: 1;
     }
 }
 
-@keyframes slideInRight {
+@keyframes slideOutLeft {
     0% {
-        transform: translateY(-200px);
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
     }
 
     100% {
-        transform: translateX(0);
+        transform: translateX(-200px);
+        opacity: 0;
+    }
+}
+
+@keyframes slideInUp {
+    0% {
+        transform: translateY(-200px);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutUp {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translateY(-200px);
+        opacity: 0;
     }
 }
 
