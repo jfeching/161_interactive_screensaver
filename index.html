@@ -8,23 +8,69 @@
 
 <body>
     <canvas id="output"></canvas>
-
-    <div class="eyepointslider">
-
-        Speed: <input type="range" min="1" max="20" value="10" class="slider" id="speed">
-        <p>Value: <span id="speed_mult"></span></p>
+    <section class="background"></section>
+    <div class="main">
+        <div class="optionsContainer invisible" id="sliders">
+            <div class="speedslider">
+                <p>Speed</p>
+                <div class="break"></div>
+                <input type="range" min="1" max="20" value="10" class="slider" id="speed">
+                <div class="break"></div>
+                <p>Value: <span id="speed_mult">1</span></p>
+            </div>
+            <hr>
+            <div class="scaleslider">
+                <p>Scale</p>
+                <div class="break"></div>
+                <input type="range" min="5" max="20" value="10" class="slider" id="scale">
+                <div class="break"></div>
+                <p>Value: <span id="scale_mult">1</span></p>
+            </div>
+            <hr>
+            <div class="lightdirslider">
+                <p>Light Direction</p>
+                <div class="break"></div>
+                <br>
+                <div>X <input type="range" min="-10" max="10" value="0" class="slider" id="x-lightdir"></div>
+                <div class="break"></div>
+                <br>
+                <div>Y <input type="range" min="-10" max="10" value="0" class="slider" id="y-lightdir"></div>
+                <div class="break"></div>
+                <br>
+                <div>Z <input type="range" min="-10" max="10" value="0" class="slider" id="z-lightdir"></div>
+                <div class="break"></div>
+                <div class="value">
+                    <p><span id="lidirVector">x: 0 y: 0 z: 0</span></p>
+                </div>
+            </div>
+            <hr>
+            <div class="break"></div>
+            <div class="instructions">
+                <p style="text-align: center; padding-bottom: 5%;">Instructions</p>
+                <p><kbd>T</kbd> Toggle Top View</p>
+                <p><kbd>WASD</kbd> Move Camera</p>
+                <p><kbd>Space</kbd> Change Planets' Colors</p>
+            </div>
     </div>
-
-    <div class="lightdirslider">
-        Light Direction
-        X: <input type="range" min="-10" max="10" value="0" class="slider" id="x-lightdir">
-        Y:<input type="range" min="-10" max="10" value="0" class="slider" id="y-lightdir">
-        Z:<input type="range" min="-10" max="10" value="0" class="slider" id="z-lightdir">
-        <p>Value: <span id="lidirVector"></span></p>
+    <div class="creditsContainer invisible" id="credits">
+        <div class="welcome">
+            <h1>An Orbital Overture</h1>
+        </div>
+        <hr>
+        <div class="credits">
+            <p>MADE WITH ♥️ BY</p>
+            <div class="break"></div>
+            <ul>
+                <li>Ching, John Francis Benjamin E.</li>
+                <li>Jimenez, Christoper Marlo G.</li>
+                <li>Rayel, Carlos Angelo L.</li>
+            </ul>
+        </div>
     </div>
-    <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
-    <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>
-    <script src="test.js"></script>
+        <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
+        <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>
+        <script src="test.js"></script>
+    </div>
 </body>
 
 </html>
