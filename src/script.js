@@ -188,9 +188,9 @@ async function main() {
 
   // compiles and links the shaders, looks up attribute and uniform locations
   // Regular cube-like normals
-  const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
+  // const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
   // Smooth lighting normals
-  // const meshProgramInfo = webglUtils.createProgramInfo(gl, [smoothVs, fs]);
+  const meshProgramInfo = webglUtils.createProgramInfo(gl, [smoothVs, fs]);
   console.log("is error?");
 
   // Moon 1
