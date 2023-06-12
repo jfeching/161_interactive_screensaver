@@ -47,6 +47,7 @@ hr {
     width: 50vh;
     top: 5%;
     left: 3%;
+    animation: slideInLeft 1s;
 }
 
 .creditsContainer {
@@ -63,6 +64,7 @@ hr {
     width: 50vh;
     top: 5%;
     right: 3%;
+    animation: slideInRight 1s;
 }
 
 .invisible {
@@ -82,9 +84,6 @@ hr {
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 5%;
-}
-
-.lightdirslider {
     margin-bottom: 5%;
 }
 
@@ -127,6 +126,26 @@ ul {
     
     100% {
         opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    0% {
+        transform: translateX(-200px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    0% {
+        transform: translateY(-200px);
+    }
+
+    100% {
+        transform: translateX(0);
     }
 }
 
