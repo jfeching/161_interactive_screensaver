@@ -49,7 +49,7 @@ hr {
     top: 5%;
     left: 3%;
     opacity: 1;
-    animation: slideInLeft 1s ease-in-out;
+    animation: slideInLeft 1s;
 }
 
 .creditsContainer {
@@ -67,7 +67,7 @@ hr {
     width: 50vh;
     top: 5%;
     right: 3%;
-    animation: slideInUp 1s ease-in-out;
+    animation: slideInUp 1s;
 }
 
 .invisible {
