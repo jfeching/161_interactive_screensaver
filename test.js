@@ -1,3 +1,16 @@
+// # Orbital Overture
+// _An interactive screensaver_
+// Go to the site: [Orbital Overture](https://jfeching.github.io/161_interactive_screensaver/)
+// `CMSC 161 B-1L`
+// ## Attributions
+// `format: LastName, GivenName Initial | Student number`
+// * Ching, John Francis Benjamin E. | 2020-11202
+// * Jimenez, Christoper Marlo G. | 2020-05310
+// * Rayel, Carlos Angelo L. | 2019-06913
+// The program is an interactive screensaver project created in fulfilment of the requirements of CMSC 161 
+// section B-1L, 2nd Semester AY 2022-2023. It is a WebGL program with a custom renderer
+// made to depict an interactive solar system screensaver.
+
 "use strict";
 
 // This is not a full .obj parser.
@@ -303,15 +316,13 @@ async function main() {
       transformationMatrix[13] += 0.1;
     } else if (event.key == 'S' || event.key == "s") {
       transformationMatrix[13] -= 0.1;
-    } else if (event.key == 'R' || event.key == "r") {
-      cameraPosition[1] = 0;
     } else if (event.key == 'O' || event.key == 'o') {
       if (sliders.classList.contains("invisible")) {
         sliders.classList.remove("invisible");
       } else sliders.classList.add("invisible");
     } else if (event.key == ' ') {
+      //randomized the colors of the objects
       for (let i = 0; i < colors.length; i++) {
-
         // get the length of the inner array elements
         let innerArrayLength = colors[i].length;
 

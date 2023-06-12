@@ -1,6 +1,8 @@
 # Orbital Overture
 _An interactive screensaver_
 
+Go to the site: [Orbital Overture](https://jfeching.github.io/161_interactive_screensaver/)
+
 `CMSC 161 B-1L`
 
 ## Attributions
@@ -24,3 +26,11 @@ The following is an outline of the elements within the program:
 ## Interactions
 
 The following is an outline of interactions within the program:
+
+* Pressing `O` will bring up the following options that the user can manipulate:
+  * Speed - Change the speed of the rotation and revolution
+  * Scale - Enlarge or reduce the size
+  * Light Direction - Change the direction of the light
+* Pressing `T` will change the view to a higher pov or reset it
+* Pressing `SPACEBAR` will randomize the color of the elements
+* Pressing `WSAD` will translate the elements to a direction depending on the key pressed.
