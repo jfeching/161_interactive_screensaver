@@ -313,6 +313,10 @@ async function main() {
       if (sliders.classList.contains("invisibleO")) {
         sliders.classList.remove("invisibleO");
         credits.classList.remove("invisibleC");
+
+        // for the initial loading of the page
+        sliders.classList.remove("invisible");
+        credits.classList.remove("invisible");
       } else {
         sliders.classList.add("invisibleO");
         credits.classList.add("invisibleC");

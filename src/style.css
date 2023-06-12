@@ -70,6 +70,10 @@ hr {
     animation: slideInUp 1s ease-in-out;
 }
 
+.invisible {
+    display: none;
+}
+
 .invisibleO {
     animation: slideOutLeft 1s;
     opacity: 0;
