@@ -296,6 +296,7 @@ async function main() {
 
   //listens to keyboard events
   let sliders = document.getElementById("sliders");
+  let credits = document.getElementById("credits");
   var isTopView = false;
   document.addEventListener('keydown', (event) => {
     //Press T to move the camera position to "top view"
@@ -318,8 +319,12 @@ async function main() {
       transformationMatrix[13] -= 0.1;
     } else if (event.key == 'O' || event.key == 'o') {
       if (sliders.classList.contains("invisible")) {
+        credits.classList.remove("invisible");
         sliders.classList.remove("invisible");
-      } else sliders.classList.add("invisible");
+      } else {
+        sliders.classList.add("invisible");
+        credits.classList.add("invisible");
+      }
     } else if (event.key == ' ') {
       //randomized the colors of the objects
       for (let i = 0; i < colors.length; i++) {
