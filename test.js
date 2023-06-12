@@ -106,13 +106,19 @@ function updateColor(colors, addends) {
 
     // looping inner array elements
     for (let j = 0; j < innerArrayLength - 1; j++) {
-      colors[i][j] += addends[i][j];
       if (colors[i][j] >= 1.0 || colors[i][j] <= 0.0) addends[i][j] *= -1;
+      colors[i][j] += addends[i][j];
     }
   }
 }
 
-
+function randomOrbit(min,max,val) {
+  const rand = getRandomFloat(-0.01,0.01,1);
+  let temp = val + rand;
+  if (temp >= max) temp = val - rand;
+  if (temp <= min) temp = val + rand;
+  return temp;
+}
 
 async function main() {
   // Get A WebGL context
@@ -241,7 +247,7 @@ async function main() {
 
   let ldx = 1.0, ldy = 1.0, ldz = 1.0;
   let colors = [[1, 0.7, 0.5, 1], [1, 0.7, 0.5, 1], [1, 0.7, 0.5, 1]];
-  let addends = [[0.001, 0.001, 0.001, 0], [0.001, 0.001, 0.001, 0], [0.001, 0.001, 0.001, 0]];
+  let addends = [[0.005, 0.005, 0.005, 0], [0.005, 0.005, 0.005, 0], [0.005, 0.005, 0.005, 0]];
   //sliders for light direction
   let xldslider = document.getElementById("x-lightdir");
   let yldslider = document.getElementById("y-lightdir");
@@ -298,6 +304,17 @@ async function main() {
     }
   }, false);
 
+  for (let i = 0; i < colors.length; i++) {
+
+    // get the length of the inner array elements
+    let innerArrayLength = colors[i].length;
+
+    // looping inner array elements
+    for (let j = 0; j < innerArrayLength - 1; j++) {
+      colors[i][j] = getRandomFloat(0, 1, 2);
+    }
+  }
+
   /**Compute matrix
    * - basically ensures that the object is revolving correctly
    */
@@ -312,8 +329,18 @@ async function main() {
     return matrix;
   }
 
+  var planetDistance = 4;
+  var moonDistance = 6;
+
   function render(time) {
-    time *= 0.001 * speed_mult;  // convert to seconds
+    time *= 0.001 * speed_mult;  // convert to seconds\
+    // let rand = getRandomFloat(-0.0001,0.0001,4);
+    // addends = [[rand, rand, rand, 0], [rand, rand, rand, 0], [rand, rand, rand, 0]];
+    for (let i=0; i<addends.length;i++){
+      for (let j=0; j<addends[0].length-1; j++) {
+        addends[i][j] += getRandomFloat(-0.0001,0.0001,4);
+      }
+    }
 
     // Resizing canvas and enabling options
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
@@ -350,7 +377,10 @@ async function main() {
      *  - world rotation and planet rotation must match
      * - draw
      */
-    var planetTranslate = [-4, 0, 0];
+
+    // var planetTranslate = [-4, 0, 0];
+    planetDistance = randomOrbit(4,7,planetDistance);
+    var planetTranslate = [-planetDistance, 0, 0];
     var planetRotate = time;
     var planetRevolve = time;
 
@@ -379,7 +409,9 @@ async function main() {
     webglUtils.drawBufferInfo(gl, planetBufferInfo);
 
 
-    var moonTranslate = [-6, 1, 0];
+    // var moonTranslate = [-6, 1, 0];
+    moonDistance = randomOrbit(5,8,moonDistance);
+    var moonTranslate = [-moonDistance, 1, 0];
     var moonRotate = -time * 0.8;
     var moonRevolve = time * 0.8;
 
