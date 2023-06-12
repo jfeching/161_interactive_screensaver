@@ -9,7 +9,7 @@ body {
 #output {
     z-index: 0;
     width: 100vw;
-    height: 100vh;
+    height: 120vh;
     display: block;
 }
 
@@ -17,7 +17,7 @@ hr {
     width: 80%;
 }
 
-.main{
+.main {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -47,15 +47,18 @@ hr {
 .break {
     flex-basis: 100%;
     height: 0;
-  }
+}
 
-.lightdirslider, .eyepointslider {
+.lightdirslider,
+.scaleslider,
+.speedslider {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 5%;
 }
+
 
 .credits {
     display: flex;

@@ -10,7 +10,7 @@
     <canvas id="output"></canvas>
     <div class="main">
         <div class="sliderContainer invisible" id="sliders">
-            <div class="eyepointslider">
+            <div class="speedslider">
                 <p>Speed</p>
                 <div class="break"></div>
                 <input type="range" min="1" max="20" value="10" class="slider" id="speed">
@@ -18,19 +18,29 @@
                 <p>Value: <span id="speed_mult">1</span></p>
             </div>
             <hr>
+            <div class="scaleslider">
+                <p>Scale</p>
+                <div class="break"></div>
+                <input type="range" min="5" max="20" value="10" class="slider" id="scale">
+                <div class="break"></div>
+                <p>Value: <span id="scale_mult">1</span></p>
+            </div>
+            <hr>
             <div class="lightdirslider">
                 <p>Light Direction</p>
                 <div class="break"></div>
                 <br>
-                <div>X  <input type="range" min="-10" max="10" value="0" class="slider" id="x-lightdir"></div>
+                <div>X <input type="range" min="-10" max="10" value="0" class="slider" id="x-lightdir"></div>
                 <div class="break"></div>
                 <br>
-                <div>Y  <input type="range" min="-10" max="10" value="0" class="slider" id="y-lightdir"></div>
+                <div>Y <input type="range" min="-10" max="10" value="0" class="slider" id="y-lightdir"></div>
                 <div class="break"></div>
                 <br>
-                <div>Z  <input type="range" min="-10" max="10" value="0" class="slider" id="z-lightdir"></div>
+                <div>Z <input type="range" min="-10" max="10" value="0" class="slider" id="z-lightdir"></div>
                 <div class="break"></div>
-                <div class="value"><p>Value: <span id="lidirVector">x: 0 y: 0 z: 0</span></p></div>
+                <div class="value">
+                    <p>Value: <span id="lidirVector">x: 0 y: 0 z: 0</span></p>
+                </div>
             </div>
             <hr>
             <div class="break"></div>
@@ -42,7 +52,7 @@
                     <li>Rayel, Carlos Angelo L.</li>
                 </ul>
             </div>
-    </div>
+        </div>
         <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
         <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>
         <script src="test.js"></script>

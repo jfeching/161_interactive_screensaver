@@ -242,6 +242,11 @@ async function main() {
   let ldx = 1.0, ldy = 1.0, ldz = 1.0;
   let colors = [[1, 0.7, 0.5, 1], [1, 0.7, 0.5, 1], [1, 0.7, 0.5, 1]];
   let addends = [[0.001, 0.001, 0.001, 0], [0.001, 0.001, 0.001, 0], [0.001, 0.001, 0.001, 0]];
+
+  let scaleslider = document.getElementById("scale");
+  let scale_text = document.getElementById("scale_mult");
+  let scale_mult = 1;
+
   //sliders for light direction
   let xldslider = document.getElementById("x-lightdir");
   let yldslider = document.getElementById("y-lightdir");
@@ -252,6 +257,14 @@ async function main() {
   speedslider.oninput = function () {
     speed_mult = this.value / 10;
     speed_text.innerHTML = String(speedslider.value / 10);
+  }
+
+  //sliders to change the scale parameters
+  scaleslider.oninput = function () {
+    scale_mult = this.value / 10;
+    transformationMatrix[0] = 1 * parseFloat(scale_mult);
+    transformationMatrix[5] = 1 * parseFloat(scale_mult);
+    scale_text.innerHTML = String(scaleslider.value / 10);
   }
 
   //sliders to change the light direction parameters (x y z)
